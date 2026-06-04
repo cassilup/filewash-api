@@ -1,0 +1,41 @@
+{
+  "name": "@filewash/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Privacy-first file-processing for AI agents — MCP server, metered REST API, and SDK. Compress, convert, merge/split PDFs, strip metadata, remove backgrounds. Zero-retention.",
+  "keywords": ["mcp", "model-context-protocol", "ai-agents", "file-processing", "pdf", "background-removal", "metadata", "privacy", "image", "sdk"],
+  "license": "MIT",
+  "author": "Cassi Lup",
+  "homepage": "https://filewash.app",
+  "repository": { "type": "git", "url": "git+https://github.com/cassilup/filewash-api.git" },
+  "main": "src/sdk/index.js",
+  "exports": {
+    ".": "./src/sdk/index.js",
+    "./mcp": "./src/mcp/server.js"
+  },
+  "bin": {
+    "filewash-mcp": "src/mcp/server.js"
+  },
+  "mcpName": "io.github.cassilup/filewash",
+  "files": ["src", "README.md", "server.json"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "rest": "node src/rest/server.js",
+    "mcp": "node src/mcp/server.js",
+    "test:engine": "node test/engine.test.js",
+    "test:mcp": "node test/mcp.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "express": "^4.21.0",
+    "multer": "^2.1.1",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.33.5",
+    "zod": "^3.23.8"
+  },
+  "optionalDependencies": {
+    "@imgly/background-removal-node": "^1.4.5"
+  }
+}

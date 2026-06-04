@@ -1,0 +1,16 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.cassilup/filewash",
+  "description": "Privacy-first file tools for AI agents — compress, convert, merge/split PDFs, strip metadata, remove backgrounds. Files are processed locally; nothing is uploaded to a third party.",
+  "version": "0.1.0",
+  "repository": { "url": "https://github.com/cassilup/filewash-api", "source": "github" },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@filewash/api",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "runtimeHint": "node"
+    }
+  ]
+}
