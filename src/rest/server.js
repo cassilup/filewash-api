@@ -82,7 +82,9 @@ function coerce(obj) {
 }
 
 const PORT = process.env.PORT || 8787
-if (process.argv[1]?.endsWith('server.js')) {
+// Listen when run directly OR under a process manager (pm2 sets pm_id but rewrites
+// argv[1] to its own wrapper, so the endsWith check alone misses pm2).
+if (process.argv[1]?.endsWith('server.js') || process.env.pm_id != null) {
   app.listen(PORT, () => console.log(`filewash REST API on :${PORT} — ${TOOLS.length} tools, plans: ${Object.keys(PLANS).join('/')}`))
 }
 export { app }
