@@ -4,3 +4,4 @@ node_modules/
 tmp/
 .filewash-keys.json
 .filewash-keys.json.tmp
+audit.log

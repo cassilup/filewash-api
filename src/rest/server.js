@@ -6,12 +6,15 @@ import multer from 'multer'
 import { TOOLS, getTool } from '../engine/tools.js'
 import { authenticate, consume, getUsage, PLANS } from './usage.js'
 import { webhookRouter } from './webhook.js'
+import { audit, auditMiddleware } from './audit.js'
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 50 } })
 const app = express()
+app.set('trust proxy', true) // real client IP behind nginx / Cloudflare
 // Stripe webhook needs the raw body for signature checks — mount it BEFORE express.json().
 app.use(webhookRouter())
 app.use(express.json())
+app.use(auditMiddleware) // metadata-only request audit (never file contents)
 
 app.get('/health', (_req, res) => res.json({ ok: true, tools: TOOLS.length }))
 
@@ -28,9 +31,15 @@ app.get('/v1/tools', (_req, res) => {
 // Auth + quota gate for every tool call.
 function gate(req, res, next) {
   const auth = authenticate(req)
-  if (!auth) return res.status(401).json({ error: 'missing or invalid API key (Authorization: Bearer <key>)' })
+  if (!auth) {
+    audit({ event: 'auth_fail', tool: req.params?.name, status: 401, ip: req.ip, ua: req.get('user-agent') || undefined, region: req.get('cf-ipcountry') || undefined })
+    return res.status(401).json({ error: 'missing or invalid API key (Authorization: Bearer <key>)' })
+  }
   const c = consume(auth)
-  if (!c.ok) return res.status(429).json({ error: 'monthly quota exceeded', plan: auth.plan, used: c.used, quota: c.quota })
+  if (!c.ok) {
+    audit({ event: 'quota_exceeded', tool: req.params?.name, key: auth.key, plan: auth.plan, status: 429, ip: req.ip, ua: req.get('user-agent') || undefined })
+    return res.status(429).json({ error: 'monthly quota exceeded', plan: auth.plan, used: c.used, quota: c.quota })
+  }
   req.auth = auth
   res.set('X-Filewash-Plan', auth.plan)
   if (c.remaining != null) res.set('X-Filewash-Quota-Remaining', String(c.remaining))
