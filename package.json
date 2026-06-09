@@ -1,5 +1,5 @@
 {
-  "name": "@filewash/api",
+  "name": "@fixpixel/filewash-api",
   "version": "0.1.0",
   "type": "module",
   "description": "Privacy-first file-processing for AI agents — MCP server, metered REST API, and SDK. Compress, convert, merge/split PDFs, strip metadata, remove backgrounds. Zero-retention.",

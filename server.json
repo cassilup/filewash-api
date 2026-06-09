@@ -7,7 +7,7 @@
   "packages": [
     {
       "registryType": "npm",
-      "identifier": "@filewash/api",
+      "identifier": "@fixpixel/filewash-api",
       "version": "0.1.0",
       "transport": { "type": "stdio" },
       "runtimeHint": "node"
