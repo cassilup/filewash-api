@@ -35,6 +35,7 @@
     "zod": "^3.23.8"
   },
   "optionalDependencies": {
-    "@imgly/background-removal-node": "^1.4.5"
+    "@imgly/background-removal-node": "^1.4.5",
+    "stripe": "^17.0.0"
   }
 }

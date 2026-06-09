@@ -5,9 +5,12 @@ import express from 'express'
 import multer from 'multer'
 import { TOOLS, getTool } from '../engine/tools.js'
 import { authenticate, consume, getUsage, PLANS } from './usage.js'
+import { webhookRouter } from './webhook.js'
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 50 } })
 const app = express()
+// Stripe webhook needs the raw body for signature checks — mount it BEFORE express.json().
+app.use(webhookRouter())
 app.use(express.json())
 
 app.get('/health', (_req, res) => res.json({ ok: true, tools: TOOLS.length }))

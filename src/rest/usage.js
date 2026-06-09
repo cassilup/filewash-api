@@ -1,20 +1,14 @@
 // API-key auth + metered usage. Deliberately storage-agnostic: an in-memory
 // counter for local/dev, with a single reportUsage() seam where Stripe metered
-// billing (or a real datastore) plugs in for production.
+// billing (or a real datastore) plugs in for production. Keys themselves are
+// resolved by keystore.js (env keys + runtime keys minted by the Stripe webhook).
 import crypto from 'node:crypto'
+import { lookup } from './keystore.js'
 
 export const PLANS = {
   free: { quota: 100, zeroRetention: false, label: 'Free' },
   pro: { quota: 10_000, zeroRetention: false, label: 'Pro' },
   business: { quota: Infinity, zeroRetention: true, label: 'Business (zero-retention)' },
-}
-
-// Keys come from env FILEWASH_API_KEYS as "key:plan,key:plan" (e.g. "sk_live_x:pro").
-// A built-in "demo" free key exists so the API is usable out of the box.
-const KEYS = new Map([['demo', { plan: 'free', label: 'demo' }]])
-for (const pair of (process.env.FILEWASH_API_KEYS || '').split(',').map((s) => s.trim()).filter(Boolean)) {
-  const [key, plan = 'free'] = pair.split(':')
-  KEYS.set(key, { plan: PLANS[plan] ? plan : 'free', label: key.slice(0, 8) })
 }
 
 const month = () => new Date().toISOString().slice(0, 7)
@@ -23,8 +17,10 @@ const usage = new Map() // key -> { month, count }
 export function authenticate(req) {
   const hdr = req.get('authorization') || ''
   const key = hdr.startsWith('Bearer ') ? hdr.slice(7) : req.get('x-api-key')
-  if (!key || !KEYS.has(key)) return null
-  return { key, ...KEYS.get(key), plan: KEYS.get(key).plan, planConfig: PLANS[KEYS.get(key).plan] }
+  const rec = lookup(key)
+  if (!rec) return null
+  const plan = PLANS[rec.plan] ? rec.plan : 'free'
+  return { key, ...rec, plan, planConfig: PLANS[plan] }
 }
 
 export function getUsage(key) {

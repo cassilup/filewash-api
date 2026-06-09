@@ -2,3 +2,5 @@ node_modules/
 *.log
 .env
 tmp/
+.filewash-keys.json
+.filewash-keys.json.tmp
