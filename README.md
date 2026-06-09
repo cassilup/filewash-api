@@ -25,7 +25,7 @@ and **metadata scrubbing**.
 }
 ```
 
-Your agent now has 10 tools. Ask it: *"strip the location metadata from these photos before
+Your agent now has 11 tools. Ask it: *"strip the location metadata from these photos before
 I upload them"* or *"merge these contracts and rotate the scanned pages."*
 
 ## REST API
